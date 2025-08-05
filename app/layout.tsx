@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "next-themes";
 
@@ -43,6 +43,10 @@ export default function RootLayout({
             <div className="flex min-h-screen w-full">
               <AppSidebar />
               <div className="flex-1">
+                {/* Add the mobile trigger button */}
+                <div className="md:hidden p-4">
+                  <SidebarTrigger />
+                </div>
                 {children}
               </div>
             </div>
