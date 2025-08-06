@@ -116,14 +116,14 @@ def load_to_supabase():
             '-I', '-C', '-M',
             tif_file,
             'public.sst_data'
-        ], stdout=open('sst_data.sql', 'w'), check=True)
+        ], stdout=open('data/sst_data.sql', 'w'), check=True)
         print("✅ Generated load_sst.sql")
         
         # Load into database
         subprocess.run([
             'psql',
             db_url,
-            '-f', 'sst_data.sql'
+            '-f', 'data/sst_data.sql'
         ], check=True)
         print("✅ Successfully loaded raster into Supabase")
         

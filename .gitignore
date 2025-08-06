@@ -42,3 +42,4 @@ next-env.d.ts
 
 data/sst_monthly.tif
 data/sst_last_month.nc
+data/sst_data.sql
