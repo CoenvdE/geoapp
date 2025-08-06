@@ -7,17 +7,20 @@ import { OceanMap } from "@/components/ocean-map"
 import { useFungalData, createFungalLayer } from "@/hooks/use-fungal-data"
 import { usePersonData, createPersonLayer } from "@/hooks/use-person-data"
 import { useHaedatCount } from "@/hooks/use-haedat-count"
+import { useRasterCount } from "@/hooks/use-raster-count"
 
 export default function Dashboard() {
   const [peopleLayerEnabled, setPeopleLayerEnabled] = useState(true)
   const { data: fungalData, loading: fungalLoading } = useFungalData()
   const { data: peopleData, loading: peopleLoading } = usePersonData()
   const { count: haedatCount, loading: haedatCountLoading } = useHaedatCount()
+  const { count: rasterCount, loading: rasterCountLoading } = useRasterCount()
   const { layer: peopleLayer } = createPersonLayer(peopleLayerEnabled)
-  const climate_data_layers = 0;
+  
   const Haedat = haedatCountLoading ? '...' : haedatCount || 0;
   const People = peopleLoading ? '...' : peopleData.length;
   const GBIF_data = fungalLoading ? '...' : fungalData.length;
+  const climate_data_layers = rasterCountLoading ? '...' : rasterCount || 0;
 
   // Simplify this since the layer is already null when disabled
   const activeLayers = peopleLayer ? [peopleLayer] : []

@@ -5,9 +5,11 @@ import { OceanMap } from "@/components/ocean-map"
 import { createFungalLayer } from "@/hooks/use-fungal-data"
 import { createPersonLayer } from "@/hooks/use-person-data"
 import { createHaedatLayer } from "@/hooks/use-haedat-data"
+// import { createSSTLayer } from "@/hooks/use-sst-data"
 
 export default function OceanMapPage() {
   const [layerStates, setLayerStates] = useState({
+    // sst: false,      // Disable SST by default
     fungal: false,
     people: false,
     haedat: true
@@ -17,6 +19,7 @@ export default function OceanMapPage() {
     minLat: number, minLng: number, maxLat: number, maxLng: number
   } | undefined>()
   
+  // const { layer: sstLayer } = createSSTLayer(layerStates.sst, mapBounds)
   const { layer: fungalLayer } = createFungalLayer(layerStates.fungal)
   const { layer: personLayer } = createPersonLayer(layerStates.people)
   const { layer: haedatLayer } = createHaedatLayer(layerStates.haedat, mapBounds)
@@ -33,6 +36,7 @@ export default function OceanMapPage() {
   }
 
   const activeLayers = []
+  // if (sstLayer) activeLayers.push(sstLayer)
   if (fungalLayer) activeLayers.push(fungalLayer)
   if (personLayer) activeLayers.push(personLayer)
   if (haedatLayer) activeLayers.push(haedatLayer)

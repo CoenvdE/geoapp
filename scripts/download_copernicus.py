@@ -16,7 +16,7 @@ def download_sst_data():
     """
     
     # Check if NetCDF file already exists
-    nc_file = "sst_last_month.nc"
+    nc_file = "data/sst_last_month.nc"
     if os.path.exists(nc_file):
         print(f"✅ NetCDF file '{nc_file}' already exists, skipping download")
         return
@@ -46,7 +46,7 @@ def download_sst_data():
             maximum_depth=5,  # First 5 meters for surface temperature
             output_filename=nc_file
         )
-        
+        # ds.to_netcdf(nc_file)
         print("✅ Successfully downloaded SST data to 'sst_last_month.nc'")
         
     except Exception as e:
@@ -58,7 +58,7 @@ def convert_to_geotiff():
     Convert NetCDF file to GeoTIFF format
     """
     # Check if GeoTIFF file already exists
-    tif_file = "sst_monthly.tif"
+    tif_file = "data/sst_monthly.tif"
     if os.path.exists(tif_file):
         print(f"✅ GeoTIFF file '{tif_file}' already exists, skipping conversion")
         return
@@ -88,7 +88,7 @@ def load_to_supabase():
     Load GeoTIFF raster into Supabase PostgreSQL database
     """
     # Check if GeoTIFF file exists
-    tif_file = "sst_monthly.tif"
+    tif_file = "data/sst_monthly.tif"
     if not os.path.exists(tif_file):
         print(f"❌ GeoTIFF file '{tif_file}' not found. Please run conversion first.")
         return
@@ -115,15 +115,15 @@ def load_to_supabase():
             '-s', '4326',
             '-I', '-C', '-M',
             tif_file,
-            'public.sst_raster'
-        ], stdout=open('load_sst.sql', 'w'), check=True)
+            'public.sst_data'
+        ], stdout=open('sst_data.sql', 'w'), check=True)
         print("✅ Generated load_sst.sql")
         
         # Load into database
         subprocess.run([
             'psql',
             db_url,
-            '-f', 'load_sst.sql'
+            '-f', 'sst_data.sql'
         ], check=True)
         print("✅ Successfully loaded raster into Supabase")
         
@@ -158,7 +158,7 @@ def main():
     convert_to_geotiff()
     
     # Load to Supabase (only if needed)
-    # load_to_supabase()
+    load_to_supabase()
 
 if __name__ == "__main__":
     main()
@@ -170,3 +170,8 @@ if __name__ == "__main__":
 # Example using psql; you’ll be prompted for your password
 # psql "postgresql://<DB_USER>:<DB_PASSWORD>@<DB_HOST>:5432/<DB_NAME>" \
 #   -f my_geotiff_table.sql
+
+
+
+
+# psql "sslmode=verify-full sslrootcert='/Users/coenvandenelsen/Library/CloudStorage/OneDrive-Kampany/Documenten/AI projects/Coen/prod-ca-2021.crt' host=aws-0-eu-west-2.pooler.supabase.com dbname=postgres user=postgres.evwdvxygtdcffiyojgnc" -f sst_data.sql

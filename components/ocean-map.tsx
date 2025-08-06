@@ -25,10 +25,36 @@ function MapLegend({ visible, layers }: { visible: boolean; layers: any[] }) {
   const hasFungalData = layers.some(layer => layer.id?.includes('fungal'))
   const hasHaedatData = layers.some(layer => layer.id?.includes('haedat'))
   const hasPersonData = layers.some(layer => layer.id?.includes('person'))
+  const hasSSTData = layers.some(layer => layer.id?.includes('sst'))
   
   return (
     <div className="absolute bottom-4 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg border max-w-xs">
       <h3 className="text-sm font-semibold text-gray-800 mb-3">🗺️ Map Legend</h3>
+      
+      {/* SST Data Legend */}
+      {hasSSTData && (
+        <div className="mb-3">
+          <h4 className="text-xs font-semibold text-blue-700 mb-2">🌡️ Sea Surface Temperature</h4>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-xs">
+              <div className="w-3 h-3 rounded-full bg-red-600 border border-white"></div>
+              <span className="text-gray-700">Warm (25-30°C)</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <div className="w-3 h-3 rounded-full bg-orange-500 border border-white"></div>
+              <span className="text-gray-700">Moderate (15-25°C)</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <div className="w-3 h-3 rounded-full bg-blue-500 border border-white"></div>
+              <span className="text-gray-700">Cool (5-15°C)</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <div className="w-3 h-3 rounded-full bg-cyan-500 border border-white"></div>
+              <span className="text-gray-700">Cold (-2-5°C)</span>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Fungal Data Legend */}
       {hasFungalData && (
@@ -165,6 +191,12 @@ export function OceanMap({
       {/* Layer Controls Overlay */}
       {showLayerControls && (
         <div className="absolute top-20 left-4 z-10 flex flex-col gap-2">
+          {/* <LayerToggle
+            label="Sea Surface Temperature"
+            enabled={layerStates.sst ?? false}
+            onToggle={(enabled) => onLayerToggle?.('sst', enabled)}
+            icon={<span>🌡️</span>}
+          /> */}
           <LayerToggle
             label="Fungal Species"
             enabled={layerStates.fungal ?? true}
@@ -202,6 +234,29 @@ export function OceanMap({
         layers={validLayers}
         getTooltip={({ object }) => {
           if (object) {
+            // Enhanced tooltip for SST data
+            if (object.temperature !== undefined) {
+              const temp = Number(object.temperature)
+              const lat = Number(object.latitude)
+              const lng = Number(object.longitude)
+              const depth = Number(object.depth) || 0
+              
+              return {
+                html: `
+                  <div class="bg-white p-3 rounded-lg shadow-lg border max-w-xs">
+                    <div class="font-bold text-blue-800 text-sm mb-1">🌡️ Sea Surface Temperature</div>
+                    <div class="text-xs text-gray-600 mb-1">Temperature: ${temp.toFixed(1)}°C</div>
+                    <div class="text-xs text-gray-500 mb-1">📍 ${lat.toFixed(4)}, ${lng.toFixed(4)}</div>
+                    <div class="text-xs text-gray-500">📊 Depth: ${depth}m</div>
+                  </div>
+                `,
+                style: {
+                  backgroundColor: 'transparent',
+                  fontSize: '0.8em'
+                }
+              }
+            }
+            
             // Enhanced tooltip for HAEDAT events
             if (object.event_name) {
               const effects = Array.isArray(object.effects) && object.effects.length > 0
